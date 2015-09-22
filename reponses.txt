@@ -1,0 +1,8 @@
+1)il ne se passe rien, le serveur se ferme et se relance sans problème. Il n'y a aucun message d'erreur.
+
+2)le client se ferme directement apres avoir validé la commande et le serveur continue de tourner 
+  normalement.
+
+3)On reçoit le message "Connexion refusée" car telnet est un protocol IPV6 et notre serveur est en IPV4.
+
+4)En lancant deux clients simultanement, seulement un est traitée par le serveur est reçoit une réponse, l'autre ne reçoit rien et attend une réponse indéfiniment.
