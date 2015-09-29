@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <unistd.h>
+#include <signal.h>
 
 int creer_serveur(int port) {
 	int socket_serveur;
@@ -14,7 +15,7 @@ int creer_serveur(int port) {
 	saddr.sin_family = AF_INET;
 	saddr.sin_port = htons(port);
 	saddr.sin_addr.s_addr = INADDR_ANY;	
-
+	initialiser_signaux();
 	socket_serveur = socket(AF_INET,SOCK_STREAM,0);
 	if(socket_serveur == -1) {	
 		perror("socket_serveur");
@@ -31,4 +32,12 @@ int creer_serveur(int port) {
 	        perror("Can not set  SO_REUSEADDR  option");
 	}
 	return socket_serveur;
+}
+
+void initialiser_signaux(void){
+  if (signal(SIGPIPE , SIG_IGN) ==  SIG_ERR)
+    {
+      perror("signal");
+    }
+
 }
