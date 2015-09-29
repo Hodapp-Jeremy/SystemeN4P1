@@ -11,7 +11,7 @@ int main() {
 	int pid;
 	int taille = 0;
 	char msg[256]="";
-	const char *message_bienvenue = "Bonjour , bienvenu sur mon serveur\n";
+	const char *message_bienvenue = "Bonjour , bienvenue sur mon serveur\n";
 	while((socket_client = accept(serveur,NULL,NULL)) != -1){
 		pid = fork();
 		if(pid == 0){
