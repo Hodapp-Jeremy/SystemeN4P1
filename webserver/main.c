@@ -21,7 +21,7 @@ int main() {
 	perror("erreur write");
       }
       while(fgets(msg,256,fichier) != NULL){
-	fprintf(fichier,"%s %s","<Pawnee>",msg);
+	printf("%s",msg);
       }
       /*
       while((taille = read(socket_client, msg,256)) != 0){
