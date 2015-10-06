@@ -6,3 +6,18 @@
 3)On reçoit le message "Connexion refusée" car telnet est un protocol IPV6 et notre serveur est en IPV4.
 
 4)En lancant deux clients simultanement, seulement un est traitée par le serveur est reçoit une réponse, l'autre ne reçoit rien et attend une réponse indéfiniment.
+
+Partie 5 :
+
+Q3) Le message envoyé par le client web est : 
+GET / HTTP/1.1
+User-Agent: curl/7.38.0
+Host: localhost:8080
+Accept: */*
+
+4) les noms donné aux trois constituant de la première ligne de la requête envoyée par le client sont :
+-La méthode
+-L'URL
+-La version du protocole utilisé par les clients
+
+
