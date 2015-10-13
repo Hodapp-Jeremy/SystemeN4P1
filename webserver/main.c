@@ -9,8 +9,10 @@ int main() {
   int serveur = creer_serveur(8080);
   int socket_client;
   int pid;
-  //int taille = 0;
   char msg[256];
+  char* token;
+  int cptToken=0;
+  int nbMot = 0;
   const char *message_bienvenue = "Bonjour , bienvenue sur mon serveur\n";
   while((socket_client = accept(serveur,NULL,NULL)) != -1){
     pid = fork();
@@ -18,22 +20,31 @@ int main() {
       FILE *fichier;
       fichier = fdopen(socket_client,"w+");
       if(write(socket_client, message_bienvenue, strlen(message_bienvenue)) == -1){
-	perror("erreur write");
+ 	 perror("erreur write");
       }
-      while(fgets(msg,256,fichier) != NULL){
-	printf("%s",msg);
-      }
-      /*
-      while((taille = read(socket_client, msg,256)) != 0){
-	if(write(socket_client, msg, strlen(msg)) == -1){
-	  perror("Erreur ecriture");
+      if(fgets(msg,256,fichier) != NULL){
+	token = strtok(msg, " ");
+	while(token){
+	  cptToken++;
+	  if(strcmp(token,"GET") == 0 && cptToken == 1){
+	    nbMot++;
+	  }
+	  if(strcmp(token,"/") == 0 && cptToken == 2){
+	    nbMot++;
+	  }
+	  if((strcmp(token,"HTTP/1.1\r\n") == 0 || strcmp(msg,"HTTP/1.0\r\n") == 0) && cptToken == 3){
+	    nbMot++;
+	  }
+	  token = strtok(NULL," ");
 	}
-	if(taille == -1){
-	  perror("erreur taille");
-	}
+	if(nbMot == 3){
+	  printf("la premiere ligne est correcte\n");
+	}else{
+	  printf("Faux !!!");
+	}	
       }
-      exit(EXIT_SUCCESS);*/
       fclose(fichier);
+      exit(EXIT_SUCCESS);
     }
     else{
       close(socket_client);
