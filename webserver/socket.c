@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <stdlib.h> 
 
 int creer_serveur(int port) {
 	int socket_serveur;
@@ -57,4 +58,12 @@ void traitement_signal(int sig)
 {
   printf("Signal %d reçu\n", sig);
   waitpid(-1,&sig,WNOHANG);
+}
+
+char *fgets_or_exit(char *buffer , int size , FILE *stream) {
+  char * client;
+  if((client=fgets(buffer,size,stream))== NULL){
+    exit(1);
+  }
+  return client;
 }

@@ -1,0 +1,90 @@
+
+#include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
+#include "socket.h"
+#include <unistd.h>
+#include <stdlib.h>
+
+int verificationGET(char buf[], char get[], char slash[], int M, int m) {
+
+	sscanf(buf, "%s %s HTTP/%d.%d", get, slash, &M, &m);
+	if (strcmp(get, "GET") == 0 ) {
+		if (M == 1 && (m == 1 || m == 0)) {
+			printf("OK \n");
+			return 0;
+		} else {
+			return -1;
+		}
+	} else {
+		return -1;
+	}
+}
+
+int main()
+{
+  	int serveur = creer_serveur(8080);
+  	int socket_client;
+	int pid;
+  	char buffer[256] = "";
+	char * message;
+	char get[20];
+	char slash[20];
+	int M = 0;
+	int m = 0;
+	char *recup; 
+  	const char *message_bienvenue = "Bonjour et bienvenue sur mon serveur\n";
+	int length = strlen(message_bienvenue);
+
+	initialiser_signaux();
+
+  	while(1) {
+		socket_client = accept(serveur, NULL, NULL);
+		if (socket_client == -1) {
+			perror("Accept");
+			return -1;
+		}
+   		pid = fork();
+
+    	if(pid == 0) {
+
+			FILE *fichier = fdopen(socket_client, "w+");
+			if (fichier == NULL) {
+				perror("fdopen");
+				return -1;
+			}
+
+			recup = fgets(buffer, 512, fichier);
+			if (recup == NULL) {
+				perror("BAD Request");
+				return -1;
+			} 
+		
+			if (verificationGET(buffer, get, slash, M, m) == -1) {
+					message = "HTTP /1.1 400 Bad Request \r\nConnection : close \r\nContent-Length: 17 \r\n \r\n400 Bad Request \r\n";
+					write(socket_client, message, strlen(message));
+				return -1;
+			}
+
+			if ((recup = fgets(buffer, 512, fichier)) != NULL) {
+				while (strcmp(buffer, "\n") != 0 && strcmp(buffer, "\r\n") != 0) {
+					printf("buffer : %s", buffer);
+					recup = fgets(buffer, 512, fichier);
+				}
+			}
+
+			message =  "HTTP /1.1 200 OK \r\nConnection : close \r\nContent-Length: %d \r\n \r\n%s \r\n";
+			fprintf(fichier, message, length, message_bienvenue);
+
+			if(write(socket_client, message_bienvenue, strlen(message_bienvenue)) == -1) {
+				perror("erreur write");
+			}
+
+			fclose(fichier);
+			exit(EXIT_SUCCESS);
+      		
+		}
+		close(socket_client);
+	}
+  	return 0;
+}
